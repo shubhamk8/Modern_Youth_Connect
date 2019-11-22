@@ -18,7 +18,20 @@ class User(db.Model, UserMixin):
                            nullable=False)  # we hash the image file so we need to specify the string size
     password = db.Column(db.String(60), nullable=False)
     ssc_marks = db.Column(db.Float)
+    ssc_marksheet = db.Column(db.String)
     hsc_marks = db.Column(db.Float)
+    ssc_marksheet = db.Column(db.String)
     bsc_marks = db.Column(db.Float)
+    ssc_marksheet = db.Column(db.String)
     msc_marks = db.Column(db.Float)
+    ssc_marksheet = db.Column(db.String)
+
+    def get_student(self):
+        return User.query.all()
+
+
+class Admin(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
 
