@@ -44,7 +44,7 @@ def register():
                     ssc_marks=form.SSC_marks.data, hsc_marks=form.HSC_marks.data, msc_marks=form.MSC_marks.data)
         db.session.add(user)
         db.session.commit()
-        flash(f'Account created for {form.username.data}!', 'success')
+        flash('Account created for {form.username.data}', 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 

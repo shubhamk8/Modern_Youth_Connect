@@ -1,4 +1,5 @@
-PIL
+python2-secrets
+pillow
 alembic==1.2.1
 aniso8601==7.0.0
 attrs==19.2.0
@@ -40,7 +41,7 @@ Mako==1.1.0
 MarkupSafe==1.1.1
 marshmallow==2.19.5
 marshmallow-sqlalchemy==0.17.0
-more-itertools==7.2.0
+more-itertools
 passlib==1.7.1
 pycparser==2.19
 PyJWT==1.7.1
