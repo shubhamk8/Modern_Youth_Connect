@@ -14,13 +14,13 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=4, max=10)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     SSC_marks = StringField('SSC Marks', validators=[DataRequired(), Length(min=2, max=20)])
-    SSC_marksheet = FileField('Upload Marksheet', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    SSC_marksheet = FileField('Upload Marksheet', validators=[DataRequired(), FileAllowed(['pdf'])])
     HSC_marks = StringField('HSC Marks', validators=[DataRequired(), Length(min=2, max=20)])
-    HSC_marksheet = FileField('Upload Marksheet', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    HSC_marksheet = FileField('Upload Marksheet', validators=[DataRequired(), FileAllowed(['pdf'])])
     BSC_marks = StringField('BSc Marks', validators=[DataRequired(), Length(min=2, max=20)])
-    BSC_marksheet = FileField('Upload Marksheet', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    BSC_marksheet = FileField('Upload Marksheet', validators=[DataRequired(), FileAllowed(['pdf'])])
     MSC_marks = StringField('MCS marks', validators=[DataRequired(), Length(min=2, max=20)])
-    MSC_marksheet = FileField('Upload Marksheet', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+    MSC_marksheet = FileField('Upload Marksheet', validators=[DataRequired(), FileAllowed(['pdf'])])
     submit = SubmitField('Submit')
 
     def validate_username(self, username):
@@ -65,7 +65,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-class PostForm(FlaskForm):
-    title = TextAreaField('Title', validators=[DataRequired()])
-    content = TextAreaField('Content', validators=[DataRequired()])
-    submit = SubmitField('Post')
+class LoginFormAdmin(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=4, max=10)])
+    remember = BooleanField('Remember me')
+    submit = SubmitField('Login')

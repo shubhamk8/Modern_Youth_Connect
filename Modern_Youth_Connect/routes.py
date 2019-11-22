@@ -3,8 +3,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 import os, secrets
 from PIL import Image
 from Modern_Youth_Connect import app, db, bcrypt
-from Modern_Youth_Connect.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from Modern_Youth_Connect.models import User
+from Modern_Youth_Connect.forms import RegistrationForm, LoginForm, UpdateAccountForm, LoginFormAdmin
+from Modern_Youth_Connect.models import User, Admin
 
 
 @app.route("/")
@@ -23,7 +23,7 @@ def save_file(file):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(file.filename)  # underscore throws a variable name
     file_fn = random_hex + f_ext
-    file_path = os.path.join(app.root_path, 'static/profile_pics', file_fn)
+    file_path = os.path.join(app.root_path, 'static/files', file_fn)
     file.save(file_path)
     return file_fn
 
@@ -34,17 +34,18 @@ def register():
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode(
             'utf-8')  # decode converts into bytes
-        ssc_file = save_file(form.SSC_marksheet)
-        hsc_file = save_file(form.HSC_marks)
-        bsc_file = save_file(form.BSC_marksheet)
-        msc_file = save_file(form.MSC_marksheet)
-        print(bsc_file,msc_file,hsc_file,ssc_file)
+        ssc_file = save_file(form.SSC_marksheet.data)
+        hsc_file = save_file(form.HSC_marksheet.data)
+        bsc_file = save_file(form.BSC_marksheet.data)
+        msc_file = save_file(form.MSC_marksheet.data)
         user = User(username=form.username.data, email=form.email.data, password=hashed_password,
                     firstname=form.firstname.data, lastname=form.lastname.data, bsc_marks=form.BSC_marks.data,
-                    ssc_marks=form.SSC_marks.data, hsc_marks=form.HSC_marks.data, msc_marks=form.MSC_marks.data)
+                    bsc_marksheet=bsc_file, ssc_marks=form.SSC_marks.data, ssc_marksheet=ssc_file,
+                    hsc_marks=form.HSC_marks.data, hsc_marksheet=hsc_file, msc_marks=form.MSC_marks.data,
+                    msc_marksheet=msc_file)
         db.session.add(user)
         db.session.commit()
-        flash('Account created for {form.username.data}', 'success')
+        flash('Account created for ' + form.username.data, 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
@@ -78,7 +79,7 @@ def save_picture(form_picture):
     # form_picture.save(picture_path)
     output_size = (125, 125)
     resized_new_image = Image.open(form_picture)
-    resized_new_image = Image.thumbnail(output_size)
+    resized_new_image = resized_new_image.resize(output_size)
     resized_new_image.save(picture_path)  # Save the new resized image instead of the actual image
     return picture_fn
 
@@ -102,38 +103,17 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='account', image_file=image_file, form=form)
 
-# @app.route("/post/new", methods=['GET','POST'])
-# @login_required
-# def new_post():
-#     form = PostForm()
-#     if form.validate_on_submit():
-#         post=Post(title=form.title.data, content=form.content.data, author=current_user)
-#         db.session.add(post)
-#         db.session.commit()
-#         flash('Your Post has been created','success')
-#         return redirect(url_for('home'))
-#     return  render_template('create_post.html',title='New Post',form=form,legend='New Post')
-#
-# @app.route("/post/<int:post_id>")
-# @login_required
-# def post(post_id):
-#     post=Post.query.get_or_404(post_id)#to get something by ID we can use the get method.
-#     return render_template('post.html',title=post.title,post=post)
-#
-# @app.route("/post/<int:post_id>/update",methods=['GET','POST'])
-# @login_required
-# def update_post(post_id):
-#     post=Post.query.get_or_404(post_id)
-#     if post.author!=current_user:
-#         abort(403)
-#     form=PostForm()
-#     if form.validate_on_submit():
-#         post.title = form.title.data
-#         post.content = form.content.data
-#         db.session.commit()
-#         flash('Your post has been updated!', 'success')
-#         return redirect(url_for('post', post_id=post.id))
-#     elif request.method == 'GET':
-#         form.title.data = post.title
-#         form.content.data = post.content
-#     return render_template('create_post.html',title=post.title, form=form, legend='Update Post')
+
+@app.route("/admin-login", methods=['GET', 'POST'])
+def admin_login():
+    form = LoginFormAdmin()
+    if form.validate_on_submit():
+        admin = Admin.query.filter_by(username=form.username.data).first()
+        if admin and bcrypt.check_password_hash(admin.password, form.password.data):
+            login_user(admin, remember=form.remember.data)
+            next_page = request.args.get(
+                'next')  # args takes dictonary argument but it will throw error if we use for next so we use ()
+            return redirect(next_page) if next_page else redirect(url_for('home'))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+    return render_template('admin-login.html', title='Login', form=form)

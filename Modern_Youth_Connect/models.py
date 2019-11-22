@@ -20,11 +20,11 @@ class User(db.Model, UserMixin):
     ssc_marks = db.Column(db.Float)
     ssc_marksheet = db.Column(db.String)
     hsc_marks = db.Column(db.Float)
-    ssc_marksheet = db.Column(db.String)
+    hsc_marksheet = db.Column(db.String)
     bsc_marks = db.Column(db.Float)
-    ssc_marksheet = db.Column(db.String)
+    bsc_marksheet = db.Column(db.String)
     msc_marks = db.Column(db.Float)
-    ssc_marksheet = db.Column(db.String)
+    msc_marksheet = db.Column(db.String)
 
     def get_student(self):
         return User.query.all()
