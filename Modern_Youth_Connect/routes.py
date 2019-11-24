@@ -121,6 +121,7 @@ def admin_login():
 
 
 @app.route("/admin-dashboard", methods=['GET', 'POST'])
+@login_required
 def admin_dashboard():
     unverified = User.query.filter_by(verified=False).count()
     verfied = User.query.filter_by(verified=True).count()
@@ -128,12 +129,14 @@ def admin_dashboard():
 
 
 @app.route("/view-registered-students", methods=['GET'])
+@login_required
 def view_all_students():
     student_list = User.query.all()
     return render_template('view-students.html', students=student_list)
 
 
 @app.route("/view_student")
+@login_required
 def view_student():
     id = request.args['id']
     form = RegistrationForm()
@@ -144,10 +147,12 @@ def view_student():
 @app.route("/view_marksheet")
 def view_marksheet():
     file = request.args['file_name']
-    return send_file("D:\\Modern_Youth_Connect\\Modern_Youth_Connect\\static\\files\\" + file)
+    file_path = os.path.join(app.root_path, 'static/files', file)
+    return send_file(file_path)
 
 
 @app.route("/verify_student")
+@login_required
 def verify_student():
     id = request.args['id']
     user = User.query.filter_by(id=id).first()
