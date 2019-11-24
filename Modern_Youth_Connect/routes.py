@@ -115,5 +115,13 @@ def admin_login():
                 'next')  # args takes dictonary argument but it will throw error if we use for next so we use ()
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
+
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('admin-login.html', title='Login', form=form)
+
+
+@app.route("/admin-dashboard", methods=['GET', 'POST'])
+def admin_dashboard():
+    unverified = User.query.filter_by(verified=False).count()
+    verfied = User.query.filter_by(verified=True).count()
+    return render_template('admin-dashboard.html', verfied=verfied, unverified=unverified)

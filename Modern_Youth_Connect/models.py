@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
     lastname = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     image_file = db.Column(db.String(20), default='default.jpg',
-                           nullable=False)  # we hash the image file so we need to specify the string size
+                           nullable=False)
     password = db.Column(db.String(60), nullable=False)
     ssc_marks = db.Column(db.Float)
     ssc_marksheet = db.Column(db.String)
@@ -25,9 +25,14 @@ class User(db.Model, UserMixin):
     bsc_marksheet = db.Column(db.String)
     msc_marks = db.Column(db.Float)
     msc_marksheet = db.Column(db.String)
+    cv = db.Column(db.String)
+    verified = db.Column(db.Boolean, default=False)
 
     def get_student(self):
         return User.query.all()
+
+    def get_unverified(self):
+        return User.query.filter_by(verfied=False).all()
 
 
 class Admin(db.Model, UserMixin):
@@ -35,3 +40,10 @@ class Admin(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
 
+
+class Recruiter(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String)
+    username = db.Column(db.String)
+    password = db.Column(db.String)
+    company_url = db.Column(db.String)
