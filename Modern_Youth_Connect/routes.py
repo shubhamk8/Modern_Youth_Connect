@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request, abort
+from flask import render_template, url_for, flash, redirect, request, abort, send_file
 from flask_login import login_user, current_user, logout_user, login_required
 import os, secrets
 from PIL import Image
@@ -39,9 +39,9 @@ def register():
         bsc_file = save_file(form.BSC_marksheet.data)
         msc_file = save_file(form.MSC_marksheet.data)
         user = User(username=form.username.data, email=form.email.data, password=hashed_password,
-                    firstname=form.firstname.data, lastname=form.lastname.data, bsc_marks=form.BSC_marks.data,
-                    bsc_marksheet=bsc_file, ssc_marks=form.SSC_marks.data, ssc_marksheet=ssc_file,
-                    hsc_marks=form.HSC_marks.data, hsc_marksheet=hsc_file, msc_marks=form.MSC_marks.data,
+                    firstname=form.firstname.data, lastname=form.lastname.data, bsc_marks=form.BSC_percentage.data,
+                    bsc_marksheet=bsc_file, ssc_marks=form.SSC_percentage.data, ssc_marksheet=ssc_file,
+                    hsc_marks=form.HSC_percentage.data, hsc_marksheet=hsc_file, msc_marks=form.MSC_percentage.data,
                     msc_marksheet=msc_file)
         db.session.add(user)
         db.session.commit()
@@ -125,3 +125,31 @@ def admin_dashboard():
     unverified = User.query.filter_by(verified=False).count()
     verfied = User.query.filter_by(verified=True).count()
     return render_template('admin-dashboard.html', verfied=verfied, unverified=unverified)
+
+
+@app.route("/view-registered-students", methods=['GET'])
+def view_all_students():
+    student_list = User.query.all()
+    return render_template('view-students.html', students=student_list)
+
+
+@app.route("/view_student")
+def view_student():
+    id = request.args['id']
+    form = RegistrationForm()
+    student = User.query.filter_by(id=id).first()
+    return render_template('view-student.html', form=form, student=student)
+
+
+@app.route("/view_marksheet")
+def view_marksheet():
+    file = request.args['file_name']
+    return send_file("D:\\Modern_Youth_Connect\\Modern_Youth_Connect\\static\\files\\" + file)
+
+
+@app.route("/verify_student")
+def verify_student():
+    id = request.args['id']
+    user = User.query.filter_by(id=id).first()
+    user.verify()
+    return redirect(url_for('view_student', id=id))

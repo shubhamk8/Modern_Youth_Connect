@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+    <table>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Status</th>
+    <th></th>
+        {% for student in students %}
+                <tr>
+                    <td> <p>{{ student.firstname }}</p><br></td>
+                    <td> <p>{{ student.lastname }}</p><br></td>
+                    {% if student.verified == True %}
+                        <td> <p>Verified</p></td>
+                    {% else %}
+                        <td> <p>Unverified</p></td>
+                    {% endif %}
+                    <td><a href="{{ url_for('view_student',id=student.id) }}"><button>View Details</button></a></td>
+                </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

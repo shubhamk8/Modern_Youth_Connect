@@ -1,6 +1,4 @@
 body {
-  background: #fafafa;
-  color: #333333;
   margin-top: 5rem;
 }
 
@@ -67,6 +65,11 @@ a.article-title:hover {
   height: 25px;
   vertical-align: middle;
 }
+
+#backgroundImage {
+  opacity: 0.4;
+}
+
 
 .account-img {
   height: 125px;

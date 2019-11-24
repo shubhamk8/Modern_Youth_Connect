@@ -28,12 +28,16 @@ class User(db.Model, UserMixin):
     cv = db.Column(db.String)
     verified = db.Column(db.Boolean, default=False)
 
-    def get_student(self):
+    def get_students(self):
         return User.query.all()
 
     def get_unverified(self):
         return User.query.filter_by(verfied=False).all()
 
+    def verify(self):
+        self.verified = True
+        db.session.add(self)
+        db.session.commit()
 
 class Admin(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
