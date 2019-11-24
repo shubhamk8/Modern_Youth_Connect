@@ -70,3 +70,10 @@ class LoginFormAdmin(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), Length(min=4, max=10)])
     remember = BooleanField('Remember me')
     submit = SubmitField('Login')
+
+
+class RecruiterRegistrationForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    company_name = StringField('Company Name', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=4, max=10)])

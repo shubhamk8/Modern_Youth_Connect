@@ -151,6 +151,12 @@ def view_marksheet():
     return send_file(file_path)
 
 
+@app.route("/unverified_students")
+def unverified_students():
+    student_list = User.query.filter_by(verified=False).all()
+    return render_template('view-students.html', students=student_list)
+
+
 @app.route("/verify_student")
 @login_required
 def verify_student():
