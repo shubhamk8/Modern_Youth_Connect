@@ -3,7 +3,7 @@ from flask_wtf.file import FileAllowed, FileField
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from Modern_Youth_Connect.models import User
+from Modern_Youth_Connect.models import Student
 
 
 class RegistrationForm(FlaskForm):
@@ -24,14 +24,14 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Submit')
 
     def validate_username(self, username):
-        new_user = User.query.filter_by(username=username.data).one_or_none()
+        new_user = Student.query.filter_by(username=username.data).one_or_none()
         if new_user:
             raise ValidationError('This username is already taken')
 
     def validate_email(self, email):
-        new_user = User.query.filter_by(email=email.data).one_or_none()
+        new_user = Student.query.filter_by(email=email.data).one_or_none()
         if new_user:
-            raise ValidationError('User with this email already exists')
+            raise ValidationError('Student with this email already exists')
 
 
 class UpdateAccountForm(FlaskForm):
@@ -42,18 +42,18 @@ class UpdateAccountForm(FlaskForm):
 
     def validate_username(self, username):
         """
-        User may leave blank field also and try to update for that we need to validate it first and also check if it is already taken
+        Student may leave blank field also and try to update for that we need to validate it first and also check if it is already taken
         :param username:
         :return: Validation Error if true
         """
         if username.data != current_user.username:
-            new_user = User.query.filter_by(username=username.data).first()
+            new_user = Student.query.filter_by(username=username.data).first()
             if new_user:
                 raise ValidationError('this username is already taken')
 
     def validate_email(self, email):
         if email.data != current_user.email:
-            new_user = User.query.filter_by(email=email.data).first()
+            new_user = Student.query.filter_by(email=email.data).first()
             if new_user:
                 raise ValidationError('this email is already taken')
 
@@ -77,3 +77,9 @@ class RecruiterRegistrationForm(FlaskForm):
     company_name = StringField('Company Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=4, max=10)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Submit')
+
+
+
+

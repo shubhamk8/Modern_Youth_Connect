@@ -1,10 +1,14 @@
-from flask import render_template, url_for, flash, redirect, request, abort, send_file
-from flask_login import login_user, current_user, logout_user, login_required
-import os, secrets
+import os
+import secrets
+
 from PIL import Image
+from flask import render_template, url_for, flash, redirect, request, send_file
+from flask_login import login_user, current_user, logout_user, login_required
+
 from Modern_Youth_Connect import app, db, bcrypt
-from Modern_Youth_Connect.forms import RegistrationForm, LoginForm, UpdateAccountForm, LoginFormAdmin
-from Modern_Youth_Connect.models import User, Admin
+from Modern_Youth_Connect.forms import RegistrationForm, LoginForm, UpdateAccountForm, LoginFormAdmin, \
+    RecruiterRegistrationForm
+from Modern_Youth_Connect.models import Student, Admin, Recruiter
 
 
 @app.route("/")
@@ -38,15 +42,17 @@ def register():
         hsc_file = save_file(form.HSC_marksheet.data)
         bsc_file = save_file(form.BSC_marksheet.data)
         msc_file = save_file(form.MSC_marksheet.data)
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password,
-                    firstname=form.firstname.data, lastname=form.lastname.data, bsc_marks=form.BSC_percentage.data,
-                    bsc_marksheet=bsc_file, ssc_marks=form.SSC_percentage.data, ssc_marksheet=ssc_file,
-                    hsc_marks=form.HSC_percentage.data, hsc_marksheet=hsc_file, msc_marks=form.MSC_percentage.data,
-                    msc_marksheet=msc_file)
-        db.session.add(user)
-        db.session.commit()
+        student = Student(username=form.username.data, email=form.email.data, password=hashed_password,
+                          firstname=form.firstname.data, lastname=form.lastname.data,
+                          bsc_percentage=form.BSC_percentage.data,
+                          bsc_marksheet=bsc_file, ssc_percentage=form.SSC_percentage.data, ssc_marksheet=ssc_file,
+                          hsc_percentage=form.HSC_percentage.data, hsc_marksheet=hsc_file,
+                          msc_percentage=form.MSC_percentage.data,
+                          msc_marksheet=msc_file)
+        student.calculate_aggregate()
+        student.save()
         flash('Account created for ' + form.username.data, 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
 
@@ -54,7 +60,7 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = Student.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get(
@@ -68,7 +74,7 @@ def login():
 @app.route("/student-dashboard")
 @login_required
 def student_dashboard():
-    return render_template('student-dashboard.html',student=current_user)
+    return render_template('student-dashboard.html', student=current_user)
 
 
 @app.route("/logout")
@@ -129,15 +135,15 @@ def admin_login():
 @app.route("/admin-dashboard", methods=['GET', 'POST'])
 @login_required
 def admin_dashboard():
-    unverified = User.query.filter_by(verified=False).count()
-    verfied = User.query.filter_by(verified=True).count()
+    unverified = Student.query.filter_by(verified=False).count()
+    verfied = Student.query.filter_by(verified=True).count()
     return render_template('admin-dashboard.html', verfied=verfied, unverified=unverified)
 
 
 @app.route("/view-registered-students", methods=['GET'])
 @login_required
 def view_all_students():
-    student_list = User.query.all()
+    student_list = Student.query.all()
     return render_template('view-students.html', students=student_list)
 
 
@@ -146,7 +152,7 @@ def view_all_students():
 def view_student():
     id = request.args['id']
     form = RegistrationForm()
-    student = User.query.filter_by(id=id).first()
+    student = Student.query.filter_by(id=id).first()
     return render_template('view-student.html', form=form, student=student)
 
 
@@ -159,7 +165,7 @@ def view_marksheet():
 
 @app.route("/unverified_students")
 def unverified_students():
-    student_list = User.query.filter_by(verified=False).all()
+    student_list = Student.query.filter_by(verified=False).all()
     return render_template('view-students.html', students=student_list)
 
 
@@ -167,12 +173,43 @@ def unverified_students():
 @login_required
 def verify_student():
     id = request.args['id']
-    user = User.query.filter_by(id=id).first()
+    user = Student.query.filter_by(id=id).first()
     user.verify()
     return redirect(url_for('view_student', id=id))
 
-@app.route("/view_account")
+
+@app.route("/student/view_account")
+@login_required
 def view_account():
     form = RegistrationForm()
-    student = request.args['student']
-    return render_template('view-account.html',form=form,student=student)
+    return render_template('view-account.html', form=form, student=current_user)
+
+
+@app.route("/recruiter-dashboard")
+@login_required
+def recruiter_dashboard():
+    return render_template('recruiter-dashboard.html', recruiter=current_user)
+
+
+@app.route("/recruiter-register")
+def recruiter_register():
+    form = RecruiterRegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode(
+            'utf-8')  # decode converts into bytes
+        recruiter = Recruiter(username=form.username,company_name=form.company_name,email=form.email,password=hashed_password)
+
+
+@app.route("/recruiter-login", methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Recruiter.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get(
+                'next')  # args takes dictonary argument but it will throw error if we use for next so we use ()
+            return redirect(next_page) if next_page else redirect(url_for('recruiter_dashboard'))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+    return render_template('login.html', title='Login', form=form)
