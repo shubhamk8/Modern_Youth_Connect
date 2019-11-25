@@ -59,10 +59,16 @@ def login():
             login_user(user, remember=form.remember.data)
             next_page = request.args.get(
                 'next')  # args takes dictonary argument but it will throw error if we use for next so we use ()
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+            return redirect(next_page) if next_page else redirect(url_for('student_dashboard'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
+
+
+@app.route("/student-dashboard")
+@login_required
+def student_dashboard():
+    return render_template('student-dashboard.html',student=current_user)
 
 
 @app.route("/logout")
@@ -164,3 +170,9 @@ def verify_student():
     user = User.query.filter_by(id=id).first()
     user.verify()
     return redirect(url_for('view_student', id=id))
+
+@app.route("/view_account")
+def view_account():
+    form = RegistrationForm()
+    student = request.args['student']
+    return render_template('view-account.html',form=form,student=student)
