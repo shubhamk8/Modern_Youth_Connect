@@ -75,11 +75,24 @@ class LoginFormAdmin(FlaskForm):
 class RecruiterRegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     company_name = StringField('Company Name', validators=[DataRequired()])
+    company_url = StringField('Company URL', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=4, max=10)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Submit')
 
+
+class JobDescriptionForm(FlaskForm):
+    job_profile = StringField('Job Profile', validators=[DataRequired()])
+    skill = StringField('Skills', validators=[DataRequired()])
+    criteria = StringField('Criteria', validators=[DataRequired()])
+    vacancy = StringField('Vacancies', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+
+class ShortListStudentsForm(FlaskForm):
+    criteria = StringField('Percentage Criteria', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 
 

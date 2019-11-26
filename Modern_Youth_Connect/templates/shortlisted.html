@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% if students %}
+        <table>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>email</th>
+        <th></th>
+            {% for student in students %}
+                    <tr>
+                        <td> <p>{{ student.firstname }}</p><br></td>
+                        <td> <p>{{ student.lastname }}</p><br></td>
+                        <td> <p>{{ student.email }}</p><br></td>
+                        <td><a href="{{ url_for('view_student',id=student.id) }}"><button>View Details</button></a></td>
+                    </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <div style="text-align: center;">
+            <h2>There are No Students in specified criteria </h2>
+            <a href="{{ url_for('recruiter_dashboard') }}"><button>Back</button></a>
+        </div>
+    {% endif %}
+{% endblock content %}

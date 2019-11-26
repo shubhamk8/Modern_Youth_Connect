@@ -7,31 +7,19 @@
                 <ul class="dashboard_ul">
                     <div style="text-align: center;margin-top: 150px;">
                         <li>
-                            <a href="{{ url_for('view_account')}}">
+                            <a href="{{ url_for('post_job',id=current_user.id) }}">
                                 <div class="dash_icon">
                                     <img alt="dashboard-icon" src="https://thenrai.org/img/competition.png">
                                 </div>
                                 <div class="box_title">
                                     <h4>
-                                        View Account
-                                    </h4>
-                                </div>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{ url_for('unverified_students') }}">
-                                <div class="dash_icon">
-                                    <img alt="dashboard-icon" src="https://thenrai.org/img/competition.png">
-                                </div>
-                                <div class="box_title">
-                                    <h4>
-                                        View Students
+                                         Post Job Description
                                     </h4>
                                 </div>
                             </a>
                         </li>
                         <li>
+                            <a href="{{ url_for('short_list_students') }}">
                             <div class="dash_icon">
                                 <img alt="dashboard-icon" src="https://thenrai.org/img/view_info.png">
                             </div>
@@ -40,6 +28,7 @@
                                     Shortlist Students
                                 </h4>
                             </div>
+                            </a>
                         </li>
                         <li>
                             <div class="dash_icon">

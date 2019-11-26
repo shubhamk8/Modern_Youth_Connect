@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content_1 %}
+    {% if recruiters %}
+        <table>
+        <th>Company Name</th>
+        <th>Company URL</th>
+        <th></th>
+            {% for recruiter in recruiters %}
+                    <tr>
+                        <td> <p>{{ recruiter.company_name }}</p><br></td>
+                        <td> <p>{{ recruiter.company_url }}</p><br></td>
+                        <td><a href="{{ url_for('view_recruiter',id=recruiter.id) }}"><button>View Details</button></a></td>
+                    </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <div style="text-align: center;">
+            <h2>There are No Recruiters Registered</h2>
+            <a href="{{ url_for('admin_dashboard') }}"><button>Back</button></a>
+        </div>
+    {% endif %}
+{% endblock content_1 %}

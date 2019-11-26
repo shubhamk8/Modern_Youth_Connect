@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if jobDescriptions %}
+        <table>
+        <th>Company Name</th>
+        <th>Job Profile</th>
+        <th>Criteria</th>
+        <th></th>
+            {% for jobDescription in jobDescription %}
+                    <tr>
+                        <td> <p>{{ jobDescription.recruiter.company_name }}</p><br></td>
+                        <td> <p>{{ jobDescription.job_profile }}</p><br></td>
+                    </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <div style="text-align: center;">
+            <h2>There are No Jobs Description Available</h2>
+        </div>
+    {% endif %}
+{% endblock content %}

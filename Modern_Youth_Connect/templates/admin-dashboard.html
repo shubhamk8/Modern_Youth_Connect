@@ -32,24 +32,28 @@
                             </a>
                         </li>
                         <li>
-                            <div class="dash_icon">
-                                <img alt="dashboard-icon" src="https://thenrai.org/img/view_info.png">
-                            </div>
-                            <div class="box_title">
-                                <h4>
-                                    View registered Companies
-                                </h4>
-                            </div>
+                            <a href="{{ url_for('list_recruiters') }}">
+                                <div class="dash_icon">
+                                    <img alt="dashboard-icon" src="https://thenrai.org/img/view_info.png">
+                                </div>
+                                <div class="box_title">
+                                    <h4>
+                                        View registered Companies
+                                    </h4>
+                                </div>
+                            </a>
                         </li>
                         <li>
+                            <a href="{{ url_for('view_job_description') }}">
                             <div class="dash_icon">
                                 <img alt="dashboard-icon" src="https://thenrai.org/img/competitor_card.png">
                             </div>
                             <div class="box_title">
                                 <h4>
-                                    Shortlisted Studets
+                                    View Company Job Descriptions
                                 </h4>
                             </div>
+                            </a>
                         </li>
 
                         <li>
@@ -58,7 +62,7 @@
                             </div>
                             <div class="box_title">
                                 <h4>
-                                    Generate Reports
+                                    Shortlist Students
                                 </h4>
                             </div>
                         </li>

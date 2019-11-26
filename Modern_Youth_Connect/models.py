@@ -45,12 +45,13 @@ class Student(db.Model, UserMixin):
         db.session.commit()
 
     def calculate_aggregate(self):
-        ssc = self.ssc_percentage
-        hsc = self.hsc_percentage
-        bsc = self.bsc_percentage
-        msc = self.msc_percentage
+        ssc = float(self.ssc_percentage)
+        hsc = float(self.hsc_percentage)
+        bsc = float(self.bsc_percentage)
+        msc = float(self.msc_percentage)
         aggregate = ssc + hsc + bsc + msc
-        self.aggregate = int(aggregate) / 5
+        print(aggregate)
+        self.aggregate = aggregate / 5
         db.session.add(self)
         db.session.commit()
 
@@ -65,5 +66,16 @@ class Recruiter(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String)
     username = db.Column(db.String)
+    email = db.Column(db.String)
     password = db.Column(db.String)
     company_url = db.Column(db.String)
+    job_description = db.relationship("Job_description")
+
+
+class Job_description(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    r_id = db.Column(db.Integer, db.ForeignKey('recruiter.id'))
+    job_profile = db.Column(db.String)
+    skill = db.Column(db.String)
+    criteria = db.Column(db.String)
+    vacancies = db.Column(db.String)

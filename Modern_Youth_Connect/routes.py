@@ -7,8 +7,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 
 from Modern_Youth_Connect import app, db, bcrypt
 from Modern_Youth_Connect.forms import RegistrationForm, LoginForm, UpdateAccountForm, LoginFormAdmin, \
-    RecruiterRegistrationForm
-from Modern_Youth_Connect.models import Student, Admin, Recruiter
+    RecruiterRegistrationForm, JobDescriptionForm, ShortListStudentsForm
+from Modern_Youth_Connect.models import Student, Admin, Recruiter, Job_description
 
 
 @app.route("/")
@@ -191,17 +191,23 @@ def recruiter_dashboard():
     return render_template('recruiter-dashboard.html', recruiter=current_user)
 
 
-@app.route("/recruiter-register")
+@app.route("/recruiter-register", methods=['post', 'get'])
 def recruiter_register():
     form = RecruiterRegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode(
             'utf-8')  # decode converts into bytes
-        recruiter = Recruiter(username=form.username,company_name=form.company_name,email=form.email,password=hashed_password)
+        recruiter = Recruiter(username=form.username.data, company_name=form.company_name.data, email=form.email.data,
+                              password=hashed_password, company_url=form.company_url.data)
+        db.session.add(recruiter)
+        db.session.commit()
+        flash('Account created for ' + form.username.data, 'success')
+        return redirect(url_for('recruiter_login'))
+    return render_template('recruiter-register.html', title='Register', form=form)
 
 
 @app.route("/recruiter-login", methods=['GET', 'POST'])
-def login():
+def recruiter_login():
     form = LoginForm()
     if form.validate_on_submit():
         user = Recruiter.query.filter_by(email=form.email.data).first()
@@ -212,4 +218,49 @@ def login():
             return redirect(next_page) if next_page else redirect(url_for('recruiter_dashboard'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
-    return render_template('login.html', title='Login', form=form)
+    return render_template('recruiter-login.html', title='Login', form=form)
+
+
+@app.route('/list_recruiters')
+def list_recruiters():
+    recruiters = Recruiter.query.all()
+    return render_template('list_recruiters.html', recruiters=recruiters)
+
+
+@app.route('/post_job_description', methods=['GET', 'POST'])
+def post_job():
+    form = JobDescriptionForm()
+    if form.validate_on_submit():
+        r_id = request.args['id']
+        print(r_id)
+        job_desc = Job_description(r_id=r_id, job_profile=form.job_profile.data, skill=form.skill.data,
+                                   vacancies=form.vacancy.data, criteria=form.criteria.data)
+        db.session.add(job_desc)
+        db.session.commit()
+        flash('Job Description for' + form.job_profile.data + 'is added', 'success')
+        return redirect(url_for('recruiter_dashboard'))
+    return render_template('post.html', form=form)
+
+
+@app.route('/view_recruiter')
+def view_recruiter():
+    form = RecruiterRegistrationForm()
+    id = request.args['id']
+    recruiter = Recruiter.query.filter_by(id=id).first()
+    return render_template('view_recruiter.html', form=form, recruiter=recruiter)
+
+
+@app.route('/view_job_description')
+def view_job_description():
+    jd = Job_description.query.all()
+    return render_template('list_job_description.html', job_descriptions=jd)
+
+
+@app.route('/shortlist_students', methods=['get', 'post'])
+def short_list_students():
+    form = ShortListStudentsForm()
+    if form.validate_on_submit():
+        sql = "select * from student where aggregate >= "+form.criteria.data
+        students = db.session.execute(sql)
+        return render_template('shortlisted.html',students=students)
+    return render_template('shortlist_students.html', form=form)

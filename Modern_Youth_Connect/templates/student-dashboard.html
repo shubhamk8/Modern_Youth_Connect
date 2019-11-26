@@ -20,7 +20,7 @@
                         </li>
 
                         <li>
-                            <a href="{{ url_for('unverified_students') }}">
+                            <a href="{{ url_for('account') }}">
                                 <div class="dash_icon">
                                     <img alt="dashboard-icon" src="https://thenrai.org/img/competition.png">
                                 </div>
@@ -32,14 +32,16 @@
                             </a>
                         </li>
                         <li>
+                            <a href = {{ url_for('view_job_description') }}>
                             <div class="dash_icon">
                                 <img alt="dashboard-icon" src="https://thenrai.org/img/view_info.png">
                             </div>
                             <div class="box_title">
                                 <h4>
-                                    View Companies
+                                    View Job Descriptions
                                 </h4>
                             </div>
+                            </a>
                         </li>
                         <li>
                             <div class="dash_icon">

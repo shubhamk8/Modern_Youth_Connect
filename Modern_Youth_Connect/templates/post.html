@@ -1,15 +1,70 @@
 {% extends "layout.html" %}
 {% block content %}
+    <div class="content-section">
+        <form method="POST" action="" >
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Job Description</legend>
+                <div class="form-group">
+                    {{ form.job_profile.label(class="form-control-label") }}
 
-        <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="#">{{ post.author.username }}</a>
-              <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+                    {% if form.job_profile.errors %}
+                        {{ form.job_profile(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.job_profile.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.job_profile(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.skill.label(class="form-control-label") }}
+                    {% if form.skill.errors %}
+                        {{ form.skill(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.skill.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.skill(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.criteria.label(class="form-control-label") }}
+                    {% if form.criteria.errors %}
+                        {{ form.criteria(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.criteria.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.criteria(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form.vacancy.label(class="form-control-label") }}
+                    {% if form.vacancy.errors %}
+                        {{ form.vacancy(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.vacancy.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.vacancy(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
             </div>
-            <h2 class="article-title" >{{ post.title }} </h2>
-            <p class="article-content">{{ post.content }}</p>
-          </div>
-        </article>
+        </form>
+    </div>
 {% endblock content %}
