@@ -10,7 +10,9 @@ from Modern_Youth_Connect.forms import RegistrationForm, LoginForm, UpdateAccoun
     RecruiterRegistrationForm, JobDescriptionForm, ShortListStudentsForm
 from Modern_Youth_Connect.models import Student, Admin, Recruiter, Job_description
 
-
+hashed_password = bcrypt.generate_password_hash('admin123').decode(
+            'utf-8')
+print (hashed_password)
 @app.route("/")
 @app.route("/home", methods=['GET'])
 def home():
@@ -125,7 +127,7 @@ def admin_login():
             login_user(admin, remember=form.remember.data)
             next_page = request.args.get(
                 'next')  # args takes dictonary argument but it will throw error if we use for next so we use ()
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+            return redirect(next_page) if next_page else redirect(url_for('admin_dashboard'))
         else:
 
             flash('Login Unsuccessful. Please check email and password', 'danger')

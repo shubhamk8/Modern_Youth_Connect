@@ -51,7 +51,7 @@ class Student(db.Model, UserMixin):
         msc = float(self.msc_percentage)
         aggregate = ssc + hsc + bsc + msc
         print(aggregate)
-        self.aggregate = aggregate / 5
+        self.aggregate = aggregate / 4
         db.session.add(self)
         db.session.commit()
 
@@ -79,3 +79,4 @@ class Job_description(db.Model):
     skill = db.Column(db.String)
     criteria = db.Column(db.String)
     vacancies = db.Column(db.String)
+    recruiter = db.relationship('Recruiter')
